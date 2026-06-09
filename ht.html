@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fitness Tracker App</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#8BC34A,#FFEB3B);
+min-height:100vh;
+padding:20px;
+}
+
+.container{
+max-width:800px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:20px;
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+h1{
+text-align:center;
+color:#4CAF50;
+margin-bottom:20px;
+}
+
+.form{
+display:grid;
+gap:10px;
+margin-bottom:20px;
+}
+
+input,select{
+padding:10px;
+border:1px solid #ccc;
+border-radius:8px;
+}
+
+button{
+padding:12px;
+background:#4CAF50;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-size:16px;
+}
+
+button:hover{
+background:#388E3C;
+}
+
+.dashboard{
+margin-top:20px;
+padding:20px;
+background:#F1F8E9;
+border-radius:15px;
+}
+
+.card{
+background:white;
+padding:15px;
+margin:10px 0;
+border-radius:10px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+.progress-container{
+margin:15px 0;
+}
+
+.progress-bar{
+height:20px;
+background:#ddd;
+border-radius:20px;
+overflow:hidden;
+}
+
+.progress{
+height:100%;
+background:#8BC34A;
+width:0%;
+transition:0.5s;
+}
+
+h3{
+margin-bottom:10px;
+color:#4CAF50;
+}
+
+.activity-list{
+margin-top:20px;
+}
+
+.activity-item{
+background:#FFFDE7;
+padding:10px;
+margin:8px 0;
+border-radius:8px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🏃 Fitness Tracker App</h1>
+
+<div class="form">
+
+<input type="number" id="steps" placeholder="Steps Walked">
+
+<select id="exercise">
+<option>Running</option>
+<option>Walking</option>
+<option>Cycling</option>
+<option>Gym Workout</option>
+<option>Yoga</option>
+</select>
+
+<input type="number" id="time" placeholder="Workout Time (minutes)">
+
+<input type="number" id="calories" placeholder="Calories Burned">
+
+<button onclick="addActivity()">Add Activity</button>
+
+</div>
+
+<div class="dashboard">
+
+<h2>📊 Daily Summary</h2>
+
+<div class="card">
+<h3>Total Steps: <span id="totalSteps">0</span></h3>
+
+<div class="progress-container">
+<div class="progress-bar">
+<div class="progress" id="stepsProgress"></div>
+</div>
+</div>
+
+</div>
+
+<div class="card">
+<h3>Total Workout Time: <span id="totalTime">0</span> mins</h3>
+</div>
+
+<div class="card">
+<h3>Total Calories Burned: <span id="totalCalories">0</span></h3>
+</div>
+
+</div>
+
+<div class="activity-list">
+<h2>📝 Activity Log</h2>
+<div id="activities"></div>
+</div>
+
+</div>
+
+<script>
+
+let activities =
+JSON.parse(localStorage.getItem("fitnessData")) || [];
+
+function saveData(){
+localStorage.setItem(
+"fitnessData",
+JSON.stringify(activities)
+);
+}
+
+function addActivity(){
+
+let steps =
+Number(document.getElementById("steps").value);
+
+let exercise =
+document.getElementById("exercise").value;
+
+let time =
+Number(document.getElementById("time").value);
+
+let calories =
+Number(document.getElementById("calories").value);
+
+if(!steps || !time || !calories){
+alert("Please fill all fields");
+return;
+}
+
+activities.push({
+steps,
+exercise,
+time,
+calories
+});
+
+saveData();
+
+document.getElementById("steps").value="";
+document.getElementById("time").value="";
+document.getElementById("calories").value="";
+
+displayData();
+}
+
+function displayData(){
+
+let totalSteps = 0;
+let totalTime = 0;
+let totalCalories = 0;
+
+let activityHTML = "";
+
+activities.forEach(item => {
+
+totalSteps += item.steps;
+totalTime += item.time;
+totalCalories += item.calories;
+
+activityHTML += `
+<div class="activity-item">
+<strong>${item.exercise}</strong><br>
+Steps: ${item.steps}<br>
+Time: ${item.time} mins<br>
+Calories: ${item.calories}
+</div>
+`;
+
+});
+
+document.getElementById("activities").innerHTML =
+activityHTML;
+
+document.getElementById("totalSteps").innerText =
+totalSteps;
+
+document.getElementById("totalTime").innerText =
+totalTime;
+
+document.getElementById("totalCalories").innerText =
+totalCalories;
+
+let percentage =
+Math.min((totalSteps/10000)*100,100);
+
+document.getElementById("stepsProgress")
+.style.width = percentage + "%";
+}
+
+displayData();
+
+</script>
+
+</body>
+</html>
